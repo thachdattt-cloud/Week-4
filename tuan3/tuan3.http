@@ -1,0 +1,6 @@
+@tuan3_HostAddress = http://localhost:5085
+
+GET {{tuan3_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
