@@ -2,8 +2,8 @@
 {
     public class PaginationQuery
     {
-        private const int MaxPageSize= 50;
-        private int _pageSize = 10;
+        private const int MaxPageSize= 20;
+        private int _pageSize = 5;
         public string? Keyword { get; set; }
         public int PageNumber { get; set; } = 1;
 
@@ -15,7 +15,7 @@
             {
                 if (value > MaxPageSize) _pageSize = MaxPageSize;
                 else if (value < 1) _pageSize = 1;
-                else value=_pageSize;
+                else _pageSize = value;
             }
         }
     }
