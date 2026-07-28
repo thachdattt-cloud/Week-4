@@ -40,9 +40,9 @@ namespace tuan3.Controllers
 
     
         [HttpGet]
-        public ActionResult<ApiResponse<List<StudentResponseDto>>> GetAll([FromQuery] string? keyword)
+        public async  Task <ActionResult<ApiResponse<List<StudentResponseDto>>>> GetAll([FromQuery] string? keyword)
         {
-
+           await Task.Delay(2000);
             var student = _students;
          
             if (!string.IsNullOrWhiteSpace(keyword))

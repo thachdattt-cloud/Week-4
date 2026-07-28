@@ -1,10 +1,20 @@
 using System.Diagnostics;
+using tuan3.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 
-builder.Services.AddControllers(); 
+builder.Services.AddControllers();
+builder.Services.AddCors(
+    options =>
+    {
+        options.AddPolicy("AllowAll", policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        });
+    }
+    );
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -15,6 +25,7 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 });
+
 var app = builder.Build(); 
 
 
@@ -24,17 +35,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); 
-
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors("AllowAll");
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.Use(async (context, next) =>
 {
-    var watch=Stopwatch.StartNew();
+
     Console.WriteLine("A vao");
-    await next();
-    watch.Stop();
-    Console.WriteLine($"Request mat tong cong: {watch.ElapsedMilliseconds} ms");
+    await next();   
     Console.WriteLine("A sau");
 
 });
@@ -46,6 +58,13 @@ app.Use(async (context, next) =>
     await next();
     Console.WriteLine("B sau");
 });
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("c vao");
+    await next();
+    Console.WriteLine("c sau");
+});
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.MapControllers();
 
 app.Run(); 
