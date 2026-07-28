@@ -42,15 +42,15 @@ namespace tuan3.Controllers
         [HttpGet]
         public ActionResult<ApiResponse<List<StudentResponseDto>>> GetAll([FromQuery] string? keyword)
         {
-          
 
+            var student = _students;
          
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-               var  student = _students.Where(s => s.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+                student = student.Where(s => s.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var result =_students.Select(s => MapToDto(s)).ToList();
+            var result =student.Select(s => MapToDto(s)).ToList();
             return Ok(ApiResponse<List<StudentResponseDto>>.Ok(result, "Lay danh sach thanh cong"));
         }
 

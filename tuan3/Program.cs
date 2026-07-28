@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -24,9 +26,26 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection(); 
 
-app.UseAuthorization(); 
+app.UseAuthorization();
 
+app.Use(async (context, next) =>
+{
+    var watch=Stopwatch.StartNew();
+    Console.WriteLine("A vao");
+    await next();
+    watch.Stop();
+    Console.WriteLine($"Request mat tong cong: {watch.ElapsedMilliseconds} ms");
+    Console.WriteLine("A sau");
+
+});
+
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("B vao");
+    await next();
+    Console.WriteLine("B sau");
+});
 app.MapControllers();
-var appName = builder.Configuration["AppInfo:Name"];
-Console.WriteLine($"Ten app: {appName}");
+
 app.Run(); 
