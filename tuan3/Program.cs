@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using tuan3.Middlewares;
+using tuan3.Exceptions;
+using tuan3.ApiResponse;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,36 +37,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.Use(async (context, next) =>
-{
-
-    Console.WriteLine("A vao");
-    await next();   
-    Console.WriteLine("A sau");
-
-});
 
 
-app.Use(async (context, next) =>
-{
-    Console.WriteLine("B vao");
-    await next();
-    Console.WriteLine("B sau");
-});
-app.Use(async (context, next) =>
-{
-    Console.WriteLine("c vao");
-    await next();
-    Console.WriteLine("c sau");
-});
-app.UseMiddleware<RequestLoggingMiddleware>();
 app.MapControllers();
 
 app.Run(); 

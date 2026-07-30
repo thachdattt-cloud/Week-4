@@ -4,6 +4,7 @@ using tuan3.ApiResponse;
 using tuan3.DTO;
 using tuan3.models;
 using tuan3.Pagination;
+using tuan3.Exceptions;
 namespace tuan3.Controllers
 {
     [ApiController]
@@ -61,7 +62,8 @@ namespace tuan3.Controllers
             var student = _students.FirstOrDefault(s => s.Id == id);
             if (student == null)
             {
-                return NotFound(ApiResponse<StudentResponseDto>.Fail("Khong tim thay sinh vien"));
+                // return NotFound(ApiResponse<StudentResponseDto>.Fail("Khong tim thay sinh vien"));
+                 throw new NotFoundException("khong tim thay sinh vien");
             }
 
             return Ok(ApiResponse<StudentResponseDto>.Ok(MapToDto(student), "Lay du lieu thanh cong"));
@@ -73,7 +75,8 @@ namespace tuan3.Controllers
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
             {
-                return BadRequest(ApiResponse<StudentResponseDto>.Fail("Ten khong duoc de trong"));
+                // return BadRequest(ApiResponse<StudentResponseDto>.Fail("Ten khong duoc de trong"));
+                throw new BadRequestException("ten khong duoc de trong kk");
             }
 
             int newId;
@@ -109,7 +112,8 @@ namespace tuan3.Controllers
             var student = _students.FirstOrDefault(s => s.Id == id);
             if (student == null)
             {
-                return NotFound(ApiResponse<StudentResponseDto>.Fail("Khong tim thay sinh vien can sua"));
+                //return NotFound(ApiResponse<StudentResponseDto>.Fail("Khong tim thay sinh vien can sua"));
+                throw new NotFoundException("khong tim thay sinh vien can sua");
             }
 
             student.Name = dto.Name;
@@ -125,7 +129,8 @@ namespace tuan3.Controllers
             var student = _students.FirstOrDefault(s => s.Id == id);
             if (student == null)
             {
-                return NotFound(ApiResponse<string>.Fail("Khong tim thay sinh vien can xoa"));
+                // return NotFound(ApiResponse<string>.Fail("Khong tim thay sinh vien can xoa"));
+                 throw new NotFoundException("khong tim thay sinh vien can xoa");
             }
 
             _students.Remove(student);
@@ -165,6 +170,13 @@ namespace tuan3.Controllers
 
 
             return Ok(ApiResponse<PagedResult<StudentResponseDto>>.Ok(pageResult,"danh sach thong tin"));
+        }
+        [HttpGet("test-error-500")]
+
+    public IActionResult testError()
+        {
+            throw new Exception("loi 500");
+            
         }
     }
 }
