@@ -62,21 +62,37 @@ Ví dụ output Console khi gọi lỗi 500:
 [error] : loi 500
 [GET] /api/students/test-error-500 => 500 (3ms)
 
- Endpoint test-error-500 chỉ dùng để test, cần xóa trước khi nộp bài chính thức.
+### 4. Validate Dữ Liệu Đầu Vào (FluentValidation)
+* **Mục đích:** Tách logic validate ra khỏi Controller, tự động chặn request không hợp lệ trước khi vào Action xử lý, tránh viết `if` kiểm tra thủ công rải rác.
+* **Package sử dụng:** `FluentValidation.AspNetCore` (đăng ký validator + tự động validate).
+* **Thực hiện (`Validators/`):**
+  * `CreateStudentDtoValidator`: validate `Name` (không rỗng, tối đa 30 ký tự), `Age` (lớn hơn 19, nhỏ hơn 23).
+  * `UpdateStudentDtoValidator`: rule tương tự, áp dụng cho `UpdateStudentDto`.
+  * Message lỗi tùy chỉnh bằng tiếng Việt qua `.WithMessage(...)`.
+* **Đồng bộ response lỗi validate với `ApiResponse<T>`:**
+  * Cấu hình `ApiBehaviorOptions.InvalidModelStateResponseFactory` trong `Program.cs` — khi FluentValidation phát hiện dữ liệu không hợp lệ, nó tự động ghi lỗi vào `ModelState`; hàm này gom toàn bộ lỗi lại và trả về đúng cấu trúc `ApiResponse<object>.Fail(...)`, đồng nhất với các lỗi khác trong hệ thống (thay vì để mặc định trả cấu trúc `{ "errors": {...} }`).
 
-Cấu Trúc File Cập Nhật (Ngày 2)
-text
+---
+
+## Cách Kiểm Tra Kết Quả — cập nhật thêm
+
+| Endpoint | Mục đích test |
+|---|---|
+| `POST /api/students` với `Name` rỗng | FluentValidation tự chặn, response `ApiResponse` với message "Ten khong duoc de trong" |
+| `POST /api/students` với `Age = -5` | Response message "Tuoi phai tu 19 den 23" |
+| `PUT /api/students/{id}` với dữ liệu invalid | Tương tự Create, bị chặn trước khi vào Action |
+| `POST`/`PUT` với dữ liệu hợp lệ | Vào Controller xử lý bình thường, không bị ảnh hưởng |
+
+---
+
+## Cấu Trúc File Cập Nhật (Ngày 3)
+
+```text
 tuan3/
-├── Controllers/
-│   └── StudentController.cs         # Cac Action nem Custom Exception thay vi return truc tiep; them GetPage()
-├── Exceptions/
-│   ├── NotFoundException.cs         # Exception rieng cho loi 404
-│   └── BadRequestException.cs       # Exception rieng cho loi 400
-├── Middlewares/
-│   ├── RequestLoggingMiddleware.cs
-│   └── GlobalExceptionMiddleware.cs # Bat toan bo exception, chuan hoa response loi, ghi log qua ILogger
-
-└── Program.cs                       # Dang ky GlobalExceptionMiddleware DAU TI
-
+├── Validators/
+│   ├── CreateStudentDtoValidator.cs   # Rule validate cho CreateStudentDto
+│   └── UpdateStudentDtoValidator.cs   # Rule validate cho UpdateStudentDto
+└── Program.cs                         # Dang ky FluentValidation + ApiBehaviorOptions de dong bo response loi
+```
 
 
