@@ -134,7 +134,7 @@ namespace tuan3.Controllers
             }
 
             _students.Remove(student);
-            return Ok(ApiResponse<string>.Ok(null, "Xoa thanh cong"));
+            return Ok(ApiResponse<string>.Ok(null !, "Xoa thanh cong"));
         }
 
         [HttpGet("Page")]

@@ -8,7 +8,7 @@ namespace tuan3.Validators
         public CreateStudentDtoValidator()
         {
             RuleFor(x => x.Name)
-                .Empty().WithMessage("ten khong duoc de trong")
+                .NotEmpty().WithMessage("ten khong duoc de trong")
                 .MinimumLength(30).WithMessage("ki tu toi thieu 30 ki tu");
 
             RuleFor(x => x.Age)
